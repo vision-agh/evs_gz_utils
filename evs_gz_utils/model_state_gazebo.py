@@ -54,6 +54,9 @@ class UAVStateGazebo(ROSNode):
 
     def _gz_pose_clb(self, gz_msg) -> None:
         msg_time_s = gz_msg.header.stamp.sec + gz_msg.header.stamp.nsec * 1e-9
+        if self.prev_time_s is not None and msg_time_s <= self.prev_time_s:
+            return
+
         # Search for the UAV model in the message
         for gz_pose in gz_msg.pose:
             if gz_pose.name == self.model_name:
