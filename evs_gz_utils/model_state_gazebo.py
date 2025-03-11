@@ -1,4 +1,4 @@
-"""Node to publish UAV state based on the direct Gazebo messages."""
+"""Node to publish model state based on the direct Gazebo messages."""
 
 from gz.msgs10.pose_v_pb2 import Pose_V
 from gz.transport13 import Node as GzNode
@@ -27,17 +27,25 @@ class UAVStateGazebo(ROSNode):
         )
         self.get_logger().info(f"Model name: {self.model_name}")
 
+        self.declare_parameter("world_name", "default")
+        self.world_name = (
+            self.get_parameter("world_name").get_parameter_value().string_value
+        )
+        self.get_logger().info(f"World name: {self.world_name}")
+
         # Some variables for the previous state
         self.prev_time_s = None
         self.prev_position = None
         self.prev_q = None
 
         # Create a publisher for the UAV state
-        self.state_publisher = self.create_publisher(Odometry, "/evs_uav/gz_state", 10)
+        self.state_publisher = self.create_publisher(
+            Odometry, f"/evs/{self.model_name}/state", 10
+        )
 
         # Create a Gazebo node
         self.gz_node = GzNode()
-        topic_poses = "/world/default/pose/info"
+        topic_poses = f"/world/{self.world_name}/pose/info"
 
         # Try to subscribe to the topic
         self.gz_node.subscribe(Pose_V, topic_poses, self._gz_pose_clb)
@@ -52,7 +60,7 @@ class UAVStateGazebo(ROSNode):
                 state_msg = Odometry()
                 state_msg.header.stamp = self.get_clock().now().to_msg()
                 state_msg.header.frame_id = "world"
-                state_msg.child_frame_id = "base_link"
+                state_msg.child_frame_id = self.model_name
 
                 # Position (x, y, z) in Earth frame
                 state_msg.pose.pose.position.x = gz_pose.position.x

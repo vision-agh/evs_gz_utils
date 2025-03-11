@@ -29,7 +29,7 @@ setup(
     entry_points={
         "console_scripts": [
             "gz_step_example = evs_gz_utils.gz_step_example:main",
-            "uav_state_gazebo = evs_gz_utils.uav_state_gazebo:main",
+            "model_state_gazebo = evs_gz_utils.model_state_gazebo:main",
         ],
     },
 )
