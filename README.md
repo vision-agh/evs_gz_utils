@@ -29,5 +29,5 @@ Note that this is only a dummy example - normally you should perform some task b
 
 Usage example:
 ``` bash
-ros2 launch evs_gz_utils model_state.launch.py world_name:=world_1
+ros2 launch evs_gz_utils gz_step.launch.py world_name:=world_1
 ```
